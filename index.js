@@ -25,7 +25,7 @@ var users = [
 
 var jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
-jwtOptions.secretOrKey = 'tasmanianDevil';
+jwtOptions.secretOrKey = 'bagayega';
 
 var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   console.log('payload received', jwt_payload);
@@ -39,6 +39,14 @@ var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
 });
 
 passport.use(strategy);
+
+app.use(passport.initialize());
+
+// parse application/x-www-form-urlencoded
+// for easier testing with Postman or plain HTML forms
+app.use(bodyParser.urlencoded({ extended: true }));
+// parse application/json
+app.use(bodyParser.json())
 
 app.get("/", function(req, res) {
   res.json({message: "Express is up!"});
