@@ -25,9 +25,9 @@ var users = [
 
 var jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
-jwtOptions.secretOrKey = 'bagayega';
+jwtOptions.secretOrKey = 'babayega';
 
-var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+var strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
   console.log('payload received', jwt_payload);
   // usually this would be a database call:
   var user = users[_.findIndex(users, {id: jwt_payload.id})];
@@ -48,10 +48,38 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // parse application/json
 app.use(bodyParser.json())
 
+app.post("/login", function(req, res) {
+  if(req.body.name && req.body.password){
+    var name = req.body.name;
+    var password = req.body.password;
+  }
+  // usually this would be a database call:
+  var user = users[_.findIndex(users, {name: name})];
+  if( ! user ){
+    res.status(401).json({message:"no such user found"});
+  }
+
+  if(user.password === req.body.password) {
+    // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
+    var payload = {id: user.id};
+    var token = jwt.sign(payload, jwtOptions.secretOrKey);
+    res.json({message: "ok", token: token});
+  } else {
+    res.status(401).json({message:"passwords did not match"});
+  }
+});
+
 app.get("/", function(req, res) {
   res.json({message: "Express is up!"});
 });
 
-app.listen(port, function() {
-  console.log('Express running on port: ' + port);
+app.get("/secret", passport.authenticate('jwt', { session: false }),(req, res) => {
+  res.json("Success! You can not see this without a token");
 });
+
+app.listen(port, () => {
+  console.log(`Express running on port: ${port}`);
+});
+
+// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNDg4MTU2OTk2fQ.aD9XQk6cM-PK4vbmWF8In6DWAP35YHtqVA1zgdB5kxc"
+
