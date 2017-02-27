@@ -81,5 +81,3 @@ app.listen(port, () => {
   console.log(`Express running on port: ${port}`);
 });
 
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNDg4MTU2OTk2fQ.aD9XQk6cM-PK4vbmWF8In6DWAP35YHtqVA1zgdB5kxc"
-
